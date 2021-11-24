@@ -28,3 +28,34 @@
     - /logs/maria
     - /data1/maria
   tags: maria
+
+####
+# jboss 계정 관련 그룹 및 유저 생성 & Home 디렉터리 생성 / jboss 계정이 사용할 디렉터리 생성
+- name: add group "was" 
+  group:
+    name: was
+    gid: 700
+    state: present
+  tags: jboss
+
+- name: add user "jboss"
+  user:
+    name: jboss
+    group: was
+    uid: 701
+    state: present
+    shell: /bin/bash
+    home: /home/jboss
+    createhome: yes
+  tags: jboss
+
+- name: make jboss directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: jboss
+    group: was
+  with_items:
+    - /sw/jboss
+    - /logs/jboss
+  tags: jboss
