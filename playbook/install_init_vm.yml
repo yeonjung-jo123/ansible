@@ -1,0 +1,12 @@
+---
+- hosts: all
+  remote_user: finadm
+  become: yes
+  become_method: sudo
+
+    
+  roles:
+    - passwd-root.findam
+    - zabbix-agent-4.0
+    - ipa-client
+    - graylog_syslog
