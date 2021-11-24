@@ -1,0 +1,4 @@
+## host name 및 포트 정의 / ansible_user 정의
+
+bsv_fq_test01 ansible_port=22 ansible_user=finadm
+#{hostname}   {포트}           {접속 user / sudo 권한 부여}
