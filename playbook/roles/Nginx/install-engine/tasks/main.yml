@@ -1,0 +1,74 @@
+- name: Copy nginx.repo files
+  copy:
+    src: nginx.repo               # file 디렉토리에서 불러옴
+    dest: "/etc/yum.repos.d/"     # 서버 경로
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Group add web"
+  group:
+    name: web
+    gid: 1300
+    state: present
+
+- name: "User add nginx"
+  user:
+    name: nginx
+    uid: 1301
+    group: web
+    
+ - name: "/etc/passwd/ Add nginx User"
+   command: echo "nginx:x:1301:1300:Nginx web server:/var/lib/nginx:/sbin/nologin" >> /etc/passwd
+   
+ 
+ - name: Copy OpenSSL Files
+   copy:
+   src: openssl-1.1.1j.tar.gz
+   dst: "/home/nginx/"
+   owner: nginx
+   group: web
+   mode: 0644
+   
+- name: Copy Perl Files
+  copy:
+  src: perl-5.32.tar.gz
+  dst: "/home/nginx/"
+  owner: nginx
+  group: web
+  mode: 0644
+   
+- name: Copy forward files
+  copy:
+  src: ngx_http_proxy_connect_module-master.zip
+  dst: "/home/nginx/"
+  owner: nginx
+  group: web
+   mode: 0644
+   
+- name: Copy nginx config files
+  copy:
+  src: nginx-1.19.10.tar.gz
+  dst: "/home/nginx/"
+  owner: nginx
+  group: web
+  mode: 0644
+   
+- name: "Nginx Install"
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - gcc
+    - cpp
+    - gcc -c++
+    - pcre-devel
+    - openssl
+    - openssl-devel
+    - gd
+    - gd-devel
+    - autoconf
+    - make
+    - zlib-devel
+    - sqlite-devel
+    - nginx-1.19.10-1.e17.ngx.x86_64
