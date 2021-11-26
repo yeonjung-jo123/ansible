@@ -58,7 +58,7 @@
   yum:
     name: "{{ item }}"
     state: present
-  with_items:
+  with_items:     ### 위에서 copy 한 파일들 압축 풀었을때
     - gcc
     - cpp
     - gcc -c++
