@@ -1,0 +1,9 @@
+---
+- name: add group "dba"
+  group: name=dba gid=600 state=present
+  
+- name: add group "maria"
+  group: name=maria gid=602 state=present
+  
+- name: make /sw/maria/ direcory
+  group: name=dba gid=600 state=present
