@@ -1,0 +1,8 @@
+---
+- hosts: all
+  remote_user: finadm
+  become: yes
+  becom_method: sudo
+  
+  roles:
+    - jdkll
