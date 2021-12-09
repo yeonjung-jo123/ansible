@@ -1,0 +1,24 @@
+- name: "root Change Password"
+  user:
+    name: root
+    password: "{{ (root_first_var + (ansible_hostname.split('-')[-1][-7:])  + root_second_var )| password_hash('sha512') }}"
+  become: true
+  
+- name: "가상화서버이며 IP 끝자리가 1자리일 경우 > finadm Change Password"
+  user:
+    name: finadm
+    password: "{{ (finadm_first_var + '0' + vmip_var)| password_hash('sha512') }}"
+  become: true
+  when:
+    - vmip_var|length == 1
+  ignore_errors: true
+  
+    
+- name: "가상화서버이며 IP 끝자리가 2자리일 경우 > finadm Change Password"
+  user:
+    name: finadm
+    password: "{{ (finadm_first_var + '0' + vmip_var)| password_hash('sha512') }}"
+  become: true
+  when:
+    - vmip_var|length == 2
+  ignore_errors: true
