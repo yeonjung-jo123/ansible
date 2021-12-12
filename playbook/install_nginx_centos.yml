@@ -1,0 +1,19 @@
+---
+- name: Install nginx on the ubuntu nodes
+  hosts: all
+  remote_user: admin
+  become: yes
+  become_method: sudo
+
+  tasks:
+    - name: install epel-release
+      yum: name=epel-release state=latest
+    - name: install nginx web server
+      yum: name=nginx state=present
+    - name: start nginx web server
+      service: name=nginx state=started
+
+
+####
+가장 기본적인 nginx 설치_centos
+사전에 admin계정 패스워드 입력없이 sudo 권한 가능하도록 sudoers 파일에 
