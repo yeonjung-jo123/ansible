@@ -17,8 +17,8 @@
 
   - name: remote lineinfile for authorized_keys
     lineinfile:
-      dest: /home/vagrant/.ssh/authorized_keys
+      dest: /home/admin/.ssh/authorized_keys
       line: "{{ id_pub.stdout }}"
 
 
-# 자동으로 서버에 인증
+# Ansible 서버에서 admin계정에 자동으로 접속하도록 node서버에 인증
