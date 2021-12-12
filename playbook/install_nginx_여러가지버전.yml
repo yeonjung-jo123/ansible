@@ -1,0 +1,38 @@
+---
+- name: Install nginx on the ubuntu nodes
+  hosts: all
+  remote_user: admin
+  become: yes
+  become_method: sudo
+
+  tasks:
+    - name: install epel-release
+      yum: name=epel-release state=latest
+    - name: install nginx web server
+      yum: name=nginx state=present
+    - name: start nginx web server
+      service: name=nginx state=started
+
+
+####
+가장 기본적인 nginx 설치_centos
+사전에 admin계정 패스워드 입력없이 sudo 권한 가능하도록 sudoers 파일에 
+설치는 root 권한으로 
+
+===============================================================================================================================================
+---
+- name: Install nginx on the nodes
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install nginx web server
+      action : "{{ ansible_pkg_mgr }} name=nginx state=present update_cache=yes"
+      when : ansible_distribution == 'Ubuntu'
+
+####
+when을 사용하여 OS 운영체제 확인 후 그에 맞는 패키지 설치
+여기서는 Ubuntu로 가정하여 hosts(node)서버가 Ubuntu 일 경우에만 nginx 설치
+
+===============================================================================================================================================
+
