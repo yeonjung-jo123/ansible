@@ -20,5 +20,6 @@
       
       
       #######
-      ansible 서버 ~/.ssh/known_hosts 파일에 node 서버 등록
-      
+     1. ansible 서버 ~/.ssh/known_hosts 파일에 node 서버 등록
+     2. ansible 서버 계정은 admin
+     3. node 서버는 hosts파일에 미리 기재
