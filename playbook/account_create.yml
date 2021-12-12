@@ -1,8 +1,24 @@
 ---
 - hosts: all
-  remote_user: finadm
-  become: yes
-  become_method: sudo
-  
-  roles:
-    - account_create
+  #remote_user: admin
+  #become: yes
+  #become_method: sudo
+  connection: local
+  serial: 1
+  gather_facts: no
+
+  tasks:
+  - command: /usr/bin/ssh-keyscan -t ecdsa {{ ansible_host }}
+    register: keyscan
+
+  - lineinfile:
+      name=~/.ssh/known_hosts
+      create=yes
+      line={{ item }}
+    with_items:
+      - "{{ keyscan.stdout_lines }}"
+      
+      
+      #######
+      ansible 서버 ~/.ssh/known_hosts 파일에 node 서버 등록
+      
