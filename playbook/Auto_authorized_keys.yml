@@ -1,5 +1,5 @@
 ---
-- hosts: nodes
+- hosts: all
   gather_facts: no
 
   tasks:
@@ -19,3 +19,6 @@
     lineinfile:
       dest: /home/vagrant/.ssh/authorized_keys
       line: "{{ id_pub.stdout }}"
+
+
+# 자동으로 서버에 인증
