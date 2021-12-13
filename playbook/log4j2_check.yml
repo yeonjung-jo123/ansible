@@ -32,9 +32,4 @@
         insertafter: EOF
       delegate_to: localhost
       when: log4j_chk.stdout.find('log4j) !=0
-      
-      
-      
-      
-      
-      
+   
