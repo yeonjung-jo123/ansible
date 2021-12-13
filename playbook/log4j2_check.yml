@@ -1,0 +1,40 @@
+## node 서버의 /apps/~ 하위 경로 및에 log4j2 문구가 들어가는 파일이 있을 경우 추출하여 Ansible 서버로 보내서 Ansible 서버에서 취합
+
+---
+- hosts: dev-liunx , stg-linux , prd-linux , opr-linux
+  remote_user: finadm
+  become: true
+  vars:
+    hostname: "{{ ansible_hostname }}"
+    date: "{{ ansible_date_time.date }}"
+    
+  tasks:
+    - name: " Check if log4j2 exists "
+      path: "{{ '/apps/' }}"
+      shell: find /apps/* -name log4j*
+      ignore_errors: true
+      register: log4j_chk              # register = 추출값을 저장
+      
+  
+    - name: " Create a File log4j.txt "
+      file:
+        path: "/tmp/log4j.txt"
+        state: touch
+      delegate_to: localhost          # Ansible 서버 localhost 에서 실행하겠다는 의미
+      run_once: yes
+      when: log4j_chk.stdout.find('log4j') !=0
+      
+      
+    - name: " result append log4j "
+      lineinfile:
+        line: "{{ ansible_hostname }} \n{{ (log4j_chk.stdout) }}"
+        dest: "/tmp/log4j.txt"
+        insertafter: EOF
+      delegate_to: localhost
+      when: log4j_chk.stdout.find('log4j) !=0
+      
+      
+      
+      
+      
+      
