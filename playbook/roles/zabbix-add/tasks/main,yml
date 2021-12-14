@@ -1,0 +1,39 @@
+## zabbix에 vm host 추가 ##
+
+- name: "DEV host_groups"
+  set_fact:
+    host_group: DEV
+  when: 
+    - vm_hostname | search("^dev")
+    
+    
+- name: "PRD host_groups"
+  set_fact:
+    host_group: PRD
+  when: 
+    - vm_hostname | search("^prd")
+    
+ 
+- name: "Create a New host"
+  local_action:
+    module: zabbix_host
+    server_url: http://172.27.105.206/zabbix/
+    login_user: admin
+    login_password: "{{ ipa_pass }}"
+    host_name: "{{ vm_hostname }}"
+    visible_name: "{{ vm_hostname }}"
+    host_groups:
+      - "Linux servers"
+      - "{{ host_groups }}"
+    link_templates:
+      - Template OS Linux
+    status: enabled
+    state: present
+    inventory_mode: automatic
+    interfaces:
+    - type: 1
+      main: 1
+      useip: 1
+      ip: "{{ vm_ip }}"
+      dns: ""
+      port: 10050
