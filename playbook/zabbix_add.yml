@@ -1,0 +1,10 @@
+---
+- name: zabbix-add
+  hosts: all ? localhost
+  gather_facts: false
+  connection: local
+  roles:
+    - zabbix-add
+    
+    
+    ## zabbix templeate 에 추가
