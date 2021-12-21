@@ -5,4 +5,10 @@
 - name: add user "maria"
   group: name=maria group=dba uid=602 state=present
   
-  
+- name: make /sw/maria directory
+  file:
+    path: /sw/maria
+    state: directory
+    group: dba
+    owner: maria
+    mode: 0750
