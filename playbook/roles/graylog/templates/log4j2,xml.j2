@@ -1,1 +1,30 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration packages="org.graylog2.log4j" shutdownHook="disable">
+  <Appenders>
+    <RollingFile name="rolling file" fileName="/logs/graylog-server/server.log" filePattern="/logs/graylog-server/server.log.%i.gz">
+      <PatternLayout pattern="%d{yyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5p [%c{1}] %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="50MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="10" fileIndex="min"/>
+    </RollingFile>
+    
+    <!-- Internal Graylog log appender. Please do not disable. This make internal log messages available via REST calls. -->
+    <Memory name="graylog-internal-logs" bufferSize="500"/>
+  </Appenders>
+  <Loggers>
+    <!-- Application Loggers -->
+    <Logger name="org.graylog2" level="info"/>
+    <Logger name="com.github.joschi.jadconfig" level="warn"/>
+    <!-- This emits a harmless warining for ActiveDirectory every time which we can't work around :( -->
+    <Logger name="org.apache.directory.api.ldap.model.message.BindRequestImpl" level="error"/>
+    <!-- Prevent DEBUG message about Lucene Expressions not found -->
+    <Logger name="org.elasticsearch.script" level="warn"/>
+    
+    
+    <Root level="warn">
+      <AppenderRef ref="rolling-file"/>
+      <AppenderRef ref="graylog-internal-logs"/>
+    </Root>
+  </Loggers>
+</Configuration>
