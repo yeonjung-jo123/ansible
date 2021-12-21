@@ -1,0 +1,8 @@
+---
+- name: add group "dba"
+  group: name=dba gid=600 state=present
+  
+- name: add user "maria"
+  group: name=maria group=dba uid=602 state=present
+  
+  
