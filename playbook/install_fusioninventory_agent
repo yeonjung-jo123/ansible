@@ -1,0 +1,9 @@
+## GPLI Agent 설치
+---
+- hosts: all
+  remote_user: finadm
+  become: yes
+  become_method: sudo
+  
+  roles:
+    - fusioninventory_agent
