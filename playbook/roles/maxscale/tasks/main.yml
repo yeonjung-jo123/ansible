@@ -1,14 +1,84 @@
 ---
-- name: add group "dba"
+- name: "add group "dba"
   group: name=dba gid=600 state=present
   
 - name: add user "maria"
   group: name=maria group=dba uid=602 state=present
   
-- name: make /sw/maria directory
+- name: "make /sw/maria directory"
   file:
     path: /sw/maria
     state: directory
     group: dba
     owner: maria
     mode: 0750
+
+- name: "make /logs/maria directory"
+  file:
+    path: /logs/maria
+    state: directory
+    group: dba
+    owner: maria
+    mode: 0750
+    
+- name: "copy file"
+  copy:
+    src: maxscale-2.2.21.centos.7.tar.gz
+    dest: /sw/maria/
+    group: dba
+    owner: maria
+    
+- name: "Extract maxscale-2.2.21.centos.7.tar.gz"
+  unarchive:
+    src: /sw/maria/maxscale-2.2.21.centos.7.tar.gz
+    dest: /sw/maria/
+    group: dba
+    owner: maria 
+    remote_src: yes
+    
+- name: "symbolic link"
+  shell: /usr/bin/ln -s /sw/maria/maxscale-2.2.21.centos.7 /sw/maria/maxscale
+  
+- name: "chown"
+  shell: /usr/bin/chown -R maria:dba /sw/mair/maxscale
+  
+- name: "chown"
+  shell: /usr/bin/chown -R maria:dba /sw/mair/maxscale-2.2.21.centos.7
+  
+  
+- name: "make directory"
+  file:
+    path: /sw/maria/maxscale/lib/maxscale/maxscale.cnf.d
+    state: directory
+    group: dba
+    owner: maria
+    mode: 0750
+    
+- name: "make directory"
+  file:
+    path: /sw/maria/maxscale/var/lib/plugin
+    state: directory
+    group: dba
+    owner: maria
+    mode: 0750
+    
+- name: "make directory"
+  file:
+    path: /logs/maria/maxscale
+    state: directory
+    group: dba
+    owner: maria
+    mode: 0750
+    
+- name: "copy files"
+  copy:
+    src: maxscale.cnf
+    dest: /sw/maria/maxscale/etc/
+    group: dba
+    owner: maria
+
+- name: "copy maxscale.service file"
+  template: src=maxscale.service dest=/lib/systemd/system/maxscale.service mode=0644
+  
+- name: "register service file to systemd"
+  systemed: daemon_reload=yes
