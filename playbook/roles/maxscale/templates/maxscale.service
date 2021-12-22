@@ -1,0 +1,28 @@
+##
+##
+## ## maxscale 서비스를 systemctl에 등록
+
+[Unit]
+Description=MariaDB Maxscale Database Proxy
+After=network.target
+
+[Service]
+Type=forking
+Restart=on-abort
+
+# Make sure /var/run/maxscale exists
+PermissionsStartOnly=true
+ExecStartPre=/usr/bin/install -d /sw/maria/maxscale/var/run/maxscale -o maria -g dba
+
+PIDFile=/sw/maria/maxscale/var/run/maxscale/maxscale.pid
+
+# #  Use the default user and group
+User=maria
+Group=dba
+
+ExecStart=/sw/maria/maxscale/bin/maxscale --config=/sw/maria/maxscale/etc/maxscale.cnf --basedir=/sw/maria/maxscale --logdir=/logs/maria/maxscale
+TimeoutStartSec=120
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
