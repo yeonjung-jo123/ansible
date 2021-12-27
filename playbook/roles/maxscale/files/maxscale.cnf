@@ -1,0 +1,3 @@
+[maxscale]
+thread=auto
+log_info=1
