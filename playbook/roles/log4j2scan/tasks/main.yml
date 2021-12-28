@@ -1,0 +1,40 @@
+---
+- name: " Copy logpresso-log4j2-scan file "
+  copy:
+    src: logpresso-log4j2-scan-2.5.3-linux.tar.gz
+    dest: /tmp/
+    owner: root
+    group: root
+    
+- name: " extract  "
+  unarchive:
+    src: logpresso-log4j2-scan-2.5.3-linux.tar.gz
+    dest: /tmp/
+    owner: root
+    group: root
+    mode: 0744
+      remote_src: yes
+      
+- name: " change dir & /sw scan shell "
+  shell: ./tmp/log4j2-scan /sw
+  args:
+    chdir: /
+  ignore_errors: true
+  register: dir_sw_log4j2_scan
+  
+- name: " create a dir_sw_log4j2_scan.txt "
+  file:
+    path: "/tmp/dir_sw_log4j2_scan.txt"
+    state: touch
+  delegate_to: localhost
+  run_once: yes
+  when: dir_sw_log4j2_scan.stdout.find('Scanned') != 0
+  
+- name: " Appender result /sw "
+  lineinfile:
+    line: "-------------\n[ {{ ansible_hostname }} ] \n--------------- \n{{ (dir_sw_log4j2_scan.stdout) }} \n"
+    dest: "/tmp/dir_sw_log4j2_scan.txt"
+    insertafter: EOF
+  delegate_to: localhost
+  when: dir_sw_log4j2_scan.stdout.find('Scanned') != 0
+  
