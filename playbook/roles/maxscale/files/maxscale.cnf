@@ -1,3 +1,135 @@
 [maxscale]
-thread=auto
+threads=auto
 log_info=1
+log_notice=1
+logdir=/logs/maria/maxscale/
+piddir=/logs/maria/maxscale/
+syslog=0
+
+[MySQL Monitor]
+type=monitor
+# module=galeramon
+module=mysqlmon
+disable_master_failback=1
+servers=server1,server2,server3
+user=maxscale
+passwd=Maxscale!
+monitor_interval=1000
+use_priority=true
+# available_when_dono=true
+script=/home/maria/failover/failover.sh
+events=master_down
+
+[MaxInfo]
+type=service
+router=maxinfo
+user=maxscale
+passwd=Maxscale!
+
+[RW]
+type=service
+router=readwirtesplit
+servers=server1,server2,server3
+user=maxscale
+passwd=Maxscale!
+version_string=10.1.21-MariaDB-enterprise
+max_slave_connections=100%
+router_options=slave_selection_criteria=LEAST_GLOBAL_CONNECTIONS
+# router_options=slave_selection_criteria=LEAST_CURRENT_CONNECTIONS
+max_slave_replication_lag=10
+# optimize_wildcard=true
+# enable_root_user=1
+use_sql_variables_in=master
+weightby=serv_weight
+
+# [RR]
+# type=service
+# router=readconnroute
+# router_options=synced
+# servers=server1,server2,server3
+# user=root
+# passwd=growin
+# enable_root_user=1
+
+[Debug Interface]
+type=service
+router=debugcli
+
+[CLI]
+type=service
+router=cli
+
+[MaxInfo Listener]
+type=listener
+service=MaxInfo
+protocol=MySQLClient
+port=9003
+
+[MaxInfo JSON Listener]
+type=listener
+service=MaxInfo
+protocol=HTTPD
+port=8003
+
+# [Round Robin Listener]
+# type=listener
+# service=RR
+# protocol=MySQLClient
+# port=4007
+
+[RW Split Listener]
+type=listener
+service=RW
+protocol=MySQLClient
+port=4541
+
+
+[Debug Listener]
+type=listener
+service=Debug Interface
+protocol=telnetd
+address=127.0.0.1
+port=4442
+
+[MaxAdmin Unix Listener]
+type=listener
+service=CLI
+protocol=maxscaled
+socket=default
+
+[MaxAdmin Inet Listener]
+type=listener
+service=CLI
+protocol=maxscaled
+address=localhost
+port=6603
+
+[server1]
+type=server
+address=11.111.111.111
+port=4540
+protocol=MySQLBackend
+priority=1
+# persistpoolmax=200
+# persistmaxtime=86400
+serv_weight=1
+
+[server2]
+type=server
+address=22.222.222.222
+port=4540
+protocol=MySQLBackend
+priority=2
+# persistpoolmax=200
+# persistmaxtime=86400
+serv_weight=2
+
+[server3]
+type=server
+address=33.333.333.333
+port=4540
+protocol=MySQLBackend
+priority=3
+# persistpoolmax=200
+# persistmaxtime=86400
+serv_weight=2
