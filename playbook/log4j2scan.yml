@@ -1,0 +1,10 @@
+## logj42 scan tar 파일을 host 서버에 돌린 후 결과를 ansible 서버에서 취합
+
+---
+- hosts: all
+  remote_user: finadm
+  become: yes
+  become_method: sudo
+  
+  roles:
+    - log4j2scan
