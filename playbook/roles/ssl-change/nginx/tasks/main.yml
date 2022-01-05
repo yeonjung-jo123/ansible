@@ -1,0 +1,11 @@
+---
+- name : Copy SSL Cert files
+  copy:
+    src: certs/finnq.com/
+    dest: "{{ SSL_CERT_HOME }}"
+    owner: "{{ INSTALL_OWNER }}"
+    group: "{{ INSTALL_GROUP }}"
+    mode: go+r
+    
+ - name: restart nginx
+   systemd: name=nginx state=restarted
