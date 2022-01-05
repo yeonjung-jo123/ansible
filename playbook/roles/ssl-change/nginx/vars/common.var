@@ -1,0 +1,5 @@
+# file: nginx common yml
+# common install vars
+INSTALL_OWNER: nginx
+INSTALL_GROUP: web
+SSL_CERT_HOME: "/etc/nginx/certs/finnq.com"
