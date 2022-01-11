@@ -6,4 +6,4 @@
 
 
 ---
-- hostsL dev-linux prd-linux
+- hosts: dev-linux prd-linux
