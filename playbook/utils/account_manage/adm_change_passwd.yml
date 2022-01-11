@@ -1,0 +1,9 @@
+## 서버 hosts 그룹 변경 
+## 입력값 : 변경을 원하는 계정
+## 입력값 : 변수값 (단어와 특수문자)
+## 정책 = {변수:단어}{변수:특수문자}{호스트서버 IP 2자리} 
+## EX) tiger!34 / circle~34 일 경우 변수는 tiger! 또는 circle~
+
+
+---
+- hostsL dev-linux prd-linux
