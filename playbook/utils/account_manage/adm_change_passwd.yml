@@ -7,3 +7,27 @@
 
 ---
 - hosts: dev-linux prd-linux
+  remote_user: finadm
+  vars:
+    ip: '{{ ansible_eth0["ipv4"]["address"] }}'
+    ip2: '{{ ansible_bond0["ipv4"]["address"] }}'
+    lastnum2: "{{ ip.split('.')[-1][-2:] }}"
+    lastnum3: "{{ ip2.split('.')[-1][-2:] }}"
+  
+  
+  vars_prompt:
+    - name: "user_id"
+      prompt: "Enter the User, you want to change password"
+      private: no
+    - name: "password var"
+      prompt: "Enter the Pawwrod variable"
+      private: no
+      
+  tasks:
+  - name: "{{ user_id }} Check if user exists"
+    shell: id -u "{{ user_id }}"
+    register: user_exists
+    ignore_errors: true
+    
+    
+    
