@@ -60,7 +60,7 @@
     ignore_errors: true
     
     
-    - name: "물리 서버이며 , IP가 2자리 이상일 경우 {{ user_id }} change passwd"
+  - name: "물리 서버이며 , IP가 2자리 이상일 경우 {{ user_id }} change passwd"
     user:
       name: "{{ user_id }}"
       password: "{{ (password_var + '0' + lastnum3) | password_hash('sha512') }}"
