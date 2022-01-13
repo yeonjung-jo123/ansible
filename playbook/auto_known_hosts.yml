@@ -1,3 +1,5 @@
+# 자동으로 ansible 서버에 node들에 대해 known host에 등록
+
 ---
 - hosts: all
   connection: local
