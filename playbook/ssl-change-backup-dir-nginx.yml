@@ -1,0 +1,10 @@
+# nginx ssl certs 디렉토리 백업
+
+---
+- hosts: bdv-fq-testweb
+  remote_user: finadm
+  become: yes
+  become_method: sudo
+  
+  roles:
+    - ssl-chage-backup-dir/nginx
