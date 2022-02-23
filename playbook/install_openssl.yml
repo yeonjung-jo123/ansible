@@ -1,0 +1,8 @@
+---
+- hosts: bdv-fq-test
+  remote_user: finadm
+  become: yes
+  become_method: sudo
+  
+  roles:
+    - openssl-1.1.1j
