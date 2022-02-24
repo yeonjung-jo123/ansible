@@ -1,0 +1,83 @@
+- name: "Copy openssl-1.1.1j.tar.gz"
+  copy:
+    src: openssl-1.1.1j.tar.gz
+    dest: /home/openssl
+    owner: root
+    group: root
+    mode: 0644
+    
+    
+- name: "Extract openssl-1.1.1j.tar.gz"
+  unarchive:
+    src: /home/openssl/openssl-1.1.1j.tar.gz
+    dest: /usr/local/src
+    owner: root
+    group: root
+    mode: 0644
+    remote_src: yes
+    
+    
+- name: "template openssl configure-openssl.sh"
+  template:
+    src: configure-openssl.sh.j2
+    dest: /usr/local/src/openssl-1.1.1j/configure.sh
+    owner: root
+    group: root
+    mode: 0700
+   
+   
+- name: "run openssl configure-openssl.sh"
+  shell: /usr/local/src/openssl-1.1.1j/./configure.sh
+  args:
+    chdir: /usr/local/src/openssl-1.1.1j
+    
+ 
+- name: "make install openssl"
+  shell: make && make install
+  args:
+    chdir: /usr/local/src/openssl-1.1.1j
+    
+ 
+ - name: "template link libraries openssl-1.1.1j.conf"
+   template:
+    src: openssl-1.1.1j.conf.j2
+    dest: /etc/ld.so.conf.d/openssl-1.1.1j.conf
+    owner: root
+    group: root
+    mode: 0644
+    
+ 
+ - name: "reload dynamic link"
+   shell: ldconfig -v
+   
+ 
+ - name: "openssl origin backup"
+   shell: mv /usr/bin/openssl /usr/bin/openssl_origin
+   ignore_errors: true
+   
+ 
+ - name: "template openssl profile openssl.sh"
+   template:
+    src: openssl.sh.j2
+    dest: /etc/profile.d/openssl.sh
+    owner: root
+    group: root
+    mode: 0700
+   
+   
+  ## 이거 실행 안될 경우 수동으로 source openssl.sh  실행 
+ - name: "source openssl.sh"
+   shell: source /etc/profile.d/openssl.sh
+   args:
+     chdir: /etc/profile.d/openssl.sh
+     executable: /bin/bash
+     
+     
+  - name: "openssl check"
+    shell: openssl version -a
+    
+    
+    
+    
+    
+    
