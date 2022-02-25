@@ -1,0 +1,42 @@
+---
+- name: Add group "was"
+  group: name=was gid=700 state=present
+  
+- name: Add user "khansys"
+  user: name=khansys group=was uid=710 state=present shell=/sbin/nologin
+  
+  
+- name: Make install dir
+  file:
+    path: /sw/khan/khan-agent
+    state: directory
+    group: was
+    owner: khansys
+    mode: 0750
+    recurse: yes
+    
+ - name: unzip file khan-sys agent
+   unarchive:
+     src: roles/khan-sys-agent/agent/files/files/khan-sys-agent-5.1.0.zip
+     dest: /sw/khan/khan-agent
+     owner: khansys
+     group: was
+     
+ 
+ - name: make log sysmbolic link
+   file:
+     src: /logs/khan-sys-agent
+     dest: /var/log
+     state: link
+     
+   
+ - name: Set DEV server IP target is DEV
+   lineinfile:
+     dest: /sw/khan/khan-agent/khan-sys-agent/conf/khan-sys-agent.conf
+     state: present
+     regexp: "^khan.host="
+     line: "khan.host={{ dev_khan_host }}"
+   when: ansible_hostname is search("^bdv")
+   
+   
+   
