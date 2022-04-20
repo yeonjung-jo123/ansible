@@ -1,0 +1,11 @@
+usergroup:
+  oracle:
+    user: oracle
+    group: dba
+    uid: 601
+    gid: 600
+ maird:
+    user: maird
+    group: dba
+    uid: 602
+    gid: 600
