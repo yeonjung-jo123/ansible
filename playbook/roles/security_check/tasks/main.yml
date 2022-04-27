@@ -1,0 +1,19 @@
+- name: "make raon dir"
+  file:
+    path: /raon
+    state: directory
+    group: root
+    owner: root
+    
+- name: "copy 스크립트.sh"
+  copy:
+    src: RAON_SERVER_Unix.sh
+    dest: /raon/RAON_SERVER_Unix.sh
+    group: root
+    owner: root
+    mode: 0744
+    force: yes
+    
+- name: "run 스크립트.sh"
+  shell: cd /raon; ./RAON_SERVER_Unix.sh
+  become: ture
