@@ -28,3 +28,4 @@
     dest: /home/11202/sec-check/prd/
     flat: yees
   whith_items: "{{ file_to_fetch.stdout_lines }}"
+
