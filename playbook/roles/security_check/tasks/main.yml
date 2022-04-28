@@ -14,6 +14,17 @@
     mode: 0744
     force: yes
     
-- name: "run 스크립트.sh"
+- name: "run 스크립트.sh"                   # 원격지 서버에서 해당되는 파일 
   shell: cd /raon; ./RAON_SERVER_Unix.sh
   become: ture
+
+- name: "find result *.tar file"
+  shell: find /raon -name "*.tar" -type f
+  register: file_to_fetch
+  
+- name: "fetch to file ansible-svr"  # 앤서블 서버로 결과 파일 보내기
+  fetch:
+    src: "{{ item }}"
+    dest: /home/11202/sec-check/prd/
+    flat: yees
+  whith_items: "{{ file_to_fetch.stdout_lines }}"
