@@ -1,0 +1,28 @@
+---
+- hosts: bdv-fq-???????
+  remote_user: finadm
+  beome: ture
+  vars:
+    hostname: "{{ ansible_hostname }}"
+    date: "{{ ansible_date_time.date }}"
+    
+  tasks:
+  - name: " check df -h sw | apps | logs "
+    shell: df -h | grep -E "sw|logs|apps"
+    register: result
+    ignore_errors: true
+    
+  -name: " create a result file "
+   file:
+     path: "/tmp/dev-df-h.txt"
+     state: touch
+   delegate_to: localhost
+   run_once: yes
+   
+  -name: " Append result "
+   lineinfile:
+     line: "[{{ ansible_hostname}}] {{ ansible_date_time.date }} {{ ansible_date_time.time }} \n{{ result.stdout }}"
+     dest: "/tmp/dev-df-h.txt"
+     insertafter: EOF
+   delegate_to: localhost
+   
