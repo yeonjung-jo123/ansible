@@ -1,0 +1,16 @@
+---
+- name: VM DEPLOY | Deploy VM from template
+  vmware_guest:
+    hostname: "{{ vcenter_hosts }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcpasswd }}"
+    validate_certs: "{{ validate_certs }}"
+    folder: FQDN(FINNQ)/vm
+    datacenter: "{{ datacenter }}"
+    name: "{{ vm_hostname }}"
+    state: poweredon
+    template: "{{ vm_template }}"
+    networks:
+    - name: VM Network
+      ip: "{{ vm_ip }}"
+      
