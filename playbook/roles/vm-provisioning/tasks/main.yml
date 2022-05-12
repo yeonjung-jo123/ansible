@@ -13,4 +13,8 @@
     networks:
     - name: VM Network
       ip: "{{ vm_ip }}"
+      netmask: "{{ vm_netmask }}"
+      gateway: "{{ vm_gateway }}"
+    hardware:
+      num_cpus: "{{ vm_cpu }}"
       
