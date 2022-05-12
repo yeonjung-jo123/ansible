@@ -17,4 +17,4 @@
       gateway: "{{ vm_gateway }}"
     hardware:
       num_cpus: "{{ vm_cpu }}"
-      
+      memory_mb: "{{ vm_mem }}"
