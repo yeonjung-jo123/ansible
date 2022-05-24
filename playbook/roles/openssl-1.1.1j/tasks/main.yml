@@ -24,12 +24,19 @@
     owner: root
     group: root
     mode: 0700
+    
+    ## 새로운 configure.sh 파일을 remote 서버에 생성 후 해당 sh을 실행 하는 rule
+    # configure-openssl.sh.j2 내용
+    -------------------------------------------------------------------------
+    #!/bin/bash
+    ./config --prefix=/usr/local/ssl -openssldir=/usr/local/ssl shared zlib
+    
    
    
 - name: "run openssl configure-openssl.sh"
   shell: /usr/local/src/openssl-1.1.1j/./configure.sh
   args:
-    chdir: /usr/local/src/openssl-1.1.1j
+    chdir: /usr/local/src/openssl-1.1.1j  
     
  
 - name: "make install openssl"
