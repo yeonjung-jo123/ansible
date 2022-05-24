@@ -1,0 +1,36 @@
+---
+- name: rsyslog config
+  lineinfile:
+    path: /etc/rsyslog.conf             /var/logCMD.log
+    line: local5.debug
+
+- name: CMD logrotate
+  template:
+    src: files/logrotate.j2
+    dest: /etc/logrotate.d/CMD
+ 
+# centos 7 기준 
+- name: restart rsyslog
+  systemd:
+    state: restarted
+    name: rsyslog
+    
+- name: insert /etc/profile
+  blockinfile:
+    dest: /etc/profile
+    block: |
+    
+    # user command
+    function logging
+    {
+        cmd=$(history|tail -1)
+        if [ "$cmd" != "$cmd_old" ]; then
+            IP=who am i|awk '{print $5}'|sed 's/[()]//g'
+           logger -p local5.debug -t CMD "hostname $USER $IP $$ $PWD C=$cmd"
+        fi
+       cmd_old=$cmd
+    }
+    trap logging DEBUG
+    
+- name : /etc/profile
+  shell: /etc/profile
