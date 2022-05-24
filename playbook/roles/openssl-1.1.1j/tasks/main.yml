@@ -20,12 +20,12 @@
 - name: "template openssl configure-openssl.sh"
   template:
     src: configure-openssl.sh.j2
-    dest: /usr/local/src/openssl-1.1.1j/configure.sh
+    dest: /usr/local/src/openssl-1.1.1j/configure-openssl.sh
     owner: root
     group: root
     mode: 0700
     
-    ## 새로운 configure.sh 파일을 remote 서버에 생성 후 해당 sh을 실행 하는 rule
+    ## 새로운 configure-openssl.sh 파일을 remote 서버에 생성 후 해당 sh을 실행 하는 rule
     # configure-openssl.sh.j2 내용
     -------------------------------------------------------------------------
     #!/bin/bash
@@ -34,7 +34,7 @@
    
    
 - name: "run openssl configure-openssl.sh"
-  shell: /usr/local/src/openssl-1.1.1j/./configure.sh
+  shell: /usr/local/src/openssl-1.1.1j/./configure-openssl.sh
   args:
     chdir: /usr/local/src/openssl-1.1.1j  
     
