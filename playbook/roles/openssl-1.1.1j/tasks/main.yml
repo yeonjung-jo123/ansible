@@ -80,6 +80,10 @@
      executable: /bin/bash
      
      
+     or
+  - name: "source /etc/profile/
+    shell: source /etc/profile
+     
   - name: "openssl check"
     shell: openssl version -a
     
