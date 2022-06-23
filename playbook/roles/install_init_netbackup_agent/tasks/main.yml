@@ -6,3 +6,30 @@
     group: root
     owner: root
     mode: 0644
+    
+- name : "extrac netbackup.tar"
+  shell: tar -xvf /root/netbackup-agnet.tar -C /sw
+  args:
+    chdir: /root
+    
+- name: "mv input.txt"
+  copy:
+    src: input.txt
+    dest: /sw/netbackup-agent
+    group: root
+    owner: root
+    mode: 0644
+    
+- name: "template auto netbakup agnet insall"
+  template:
+    src: auto_install_netabakup.sh.j2
+    dest: /sw/netbackup-agent/auto_install_netbackup.sh
+    owner: root
+    group: root
+    mode: 0700
+    
+- name: "shell execute"
+  shell: /sw/netbackup-agent/./auto_install_netbackup.sh
+  args:
+    chdir: /sw/netbackup-agent
+    
