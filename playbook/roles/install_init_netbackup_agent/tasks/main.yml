@@ -1,1 +1,8 @@
 ---
+- name : "mv netbackup agent file to client"
+  copy:
+    src: netbackup-agent.tar
+    dest: /root
+    group: root
+    owner: root
+    mode: 0644
