@@ -12,7 +12,6 @@
   tasks:
   - command: /usr/bin/ssh-keyscan -t ecdsa {{ ansible_host }}
     register: keyscan
-
   - lineinfile:
       name=~/.ssh/known_hosts
       create=yes
