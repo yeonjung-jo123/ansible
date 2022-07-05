@@ -10,7 +10,7 @@
   - name: "stop tomcat"
     shell: systemctl stop tomcat
 
-
+###
 - hosts: bdv-fq-test02
   remote_user: finadm
   become: true
@@ -23,7 +23,7 @@
     args:
       chdir: /sw/jboss/domains/test11
       
-
+###
 - hosts: bdv-fq-test03
   remote_user: finadm
   become: true
