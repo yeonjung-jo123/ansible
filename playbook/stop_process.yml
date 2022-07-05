@@ -1,0 +1,37 @@
+# 서버 별 / 사용자별 / 디렉토리 별 각 다른 서버에 대한 프로세스 기동 종료 스크립트
+---
+- hosts: bdv-fq-test01
+  remote_user: finadm
+  become: true
+  become_user: root
+  become_method: sudo
+  
+  tasks:
+  - name: "stop tomcat"
+    shell: systemctl stop tomcat
+
+
+- hosts: bdv-fq-test02
+  remote_user: finadm
+  become: true
+  become_user: jboss
+  become_method: sudo
+  
+  tasks:
+  - name: "stop testap"
+    shell: /sw/jboss/domains/test11/./shutdown.sh
+    args:
+      chdir: /sw/jboss/domains/test11
+      
+
+- hosts: bdv-fq-test03
+  remote_user: finadm
+  become: true
+  become_user: jboss
+  become_method: sudo
+  
+  tasks:
+  - name: "stop testap"
+    shell: /sw/jboss/domains/test22/./shutdown.sh
+    args:
+      chdir: /sw/jboss/domains/test22
