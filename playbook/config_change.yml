@@ -1,0 +1,15 @@
+---
+- hosts: bdv-fq-server
+  remote_user: adm
+  become: true
+  become_user: root
+  become_method: sudo
+  
+  vars:
+    date: "{{ lookup('pipe', 'date +%y%m%d') }}"
+    
+  tasks:
+  - name: "backup origin file config"
+    shell: cp -arp /root/testfile.conf /root/testfile.conf.ori.{{ date }}
+    args:
+      chdir: /root
