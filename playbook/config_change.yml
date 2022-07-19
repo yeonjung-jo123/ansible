@@ -13,3 +13,20 @@
     shell: cp -arp /root/testfile.conf /root/testfile.conf.ori.{{ date }}
     args:
       chdir: /root
+  
+  - name: "backup origin file config"
+    shell: cp -arp /root/testfile2.conf /root/testfile2.conf.ori.{{ date }}
+    args:
+      chdir: /root
+
+
+  - name: "change testfile conf ip"
+    replace:
+      path: "{{ item.patch }}"
+      regexp: "{{ item.regexp }}"
+      replace: "{{ item.replace }}"
+    loop:
+      - { patch: '/root/testfile.conf' , regexp: '172.27.123.10' , replace: '172.27.123.11' }
+      - { patch: '/root/testfile2.conf' , regexp: '172.27.123.12' , replace: '172.27.123.13' }
+      
+      
