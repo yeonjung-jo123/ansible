@@ -10,7 +10,7 @@
   gather_facts: no
 
   tasks:
-  - command: /usr/bin/ssh-keyscan -t ecdsa {{ ansible_host }}
+  - command: /usr/bin/ssh-keyscan -t ecdsa {{ ansible_host }}   // or  /usr/bin/ssh-keyscan -t rsa {{ ansible_host }}
     register: keyscan
   - lineinfile:
       name=~/.ssh/known_hosts
