@@ -1,0 +1,11 @@
+---
+- hosts: 
+  remote_user: hisisJ
+  become: yes
+  become_method: sudo
+  
+  
+  
+  
+  roles:
+    - JEUS7_Patch_#3_to_#5
