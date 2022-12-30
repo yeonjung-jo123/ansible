@@ -1,0 +1,4 @@
+## Domain
+domain_dir=jeus_domain
+java7_dir=/usr/java/jdk1.7
+java8_dir=/usr/java/jdk1.8
