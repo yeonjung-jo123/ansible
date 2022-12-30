@@ -5,7 +5,8 @@
   become_method: sudo
   
   
-  
+  vars:
+    domain_dir: bo_domain
   
   roles:
     - JEUS7_Patch_#3_to_#5
