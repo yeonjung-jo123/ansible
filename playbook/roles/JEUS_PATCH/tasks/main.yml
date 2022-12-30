@@ -1,68 +1,91 @@
+### Create User hisisJ2 ###
 - name: Useradd "hisisJ2"
   user:
     name: hisisJ2
-	group: WEB
-	uid: 503
-	state: present
-	shell: /bin/bash
-	home: /home/hisisJ2
-	createhome: yes
-  tags: hisisJ2
+    group: WEB
+    uid: 520
+    state: present
+    shell: /bin/bash
+    home: /home/hisisJ2
+    createhome: yes
+    
 
-### JDK_1.8 Extract ###
+### JDK_1.8 Copy & Extract & Move ###
+- name: Copy jdk-8u281-linux-x64.tar.gz
+  copy:
+    src: jdk-8u281-linux-x64.tar.gz
+    dest: /home/hisisJ
+    owner: hisisJ
+    group: WEB
+    mode: 0644
+
 - name: Extract "JDK_1.8"
   unarchive:
-    src: /data/webapps/ ..tz
-	dest: /usr/java/jdk1.8.0_281
-	owner: root
-	group: root
-	mode:
-	remote_src: yes
+    src: /home/hisisJ/jdk-8u281-linux-x64.tar.gz
+    dest: /home/hisisJ
+    owner: hisisJ
+    group: WEB
+    remote_src: yes
+  ignore_errors: true
+  
+- name: Move JDK_1.8 /usr/java
+  shell: cp -arp /home/hisisJ/jdk1.8.0_281 /usr/java && chown -R root:root /usr/java/jdk1.8.0_281
 
 
 ### Make Directory JEUS7 Fix5 install ###
 - name: Make Directory "/home/hisisJ/jeus7005_install"
   file:
     path: /home/hisisJ/jeus7005_install
-	state: directory
-	owner: hisisJ2
-	group: WEB
-	mode: 700
+    state: directory
+    owner: hisisJ
+    group: WEB
+    mode: 0755
+    
 
-### JEUS7 Fix5 Change .bash_profile, User is hisisJ2 ###
-- name: Excute "/home/hisisJ/jeus7005_install./jeus7_unix_generic_ko.bin"
-  shell: /home/hisisJ/jeus7005_install/./jeus7_unix_generic_ko.bin
+### Copy JEUS7 Fix5 Patch File & Change chmod ##
+- name: Copy JEUS7 Fix5 Patch File
+  copy:
+    src: "{{ item }}"
+    dest: /home/hisisJ/jeus7005_install
+    owner: hisisJ
+    group: WEB
+    mode: 700
+  with_items:
+    - jeus7_unix_generic_ko.bin
+    - jeus-ws.jar
+    - jext_v7005_202102_unified.jar
+    - webadmin.war
+	- jeus_install.properites
+	- change_domain_xml_id.sh
+    - hostname.sh
 
+- name: chmod /home/hisisJ/jeus7005_install
+  shell: chmod 700 /home/hisisJ/jeus7005_install/*
+  
+  
+### Backup hisisJ2 .bash_profile ###
 - name: Backup /home/hisisJ2/.bash_profile
   shell: mv /home/hisisJ2/.bash_profile /home/hisisJ2/.bash_profile.origin
-  
-- name: Copy  /home/hisisJ/.bash_profile to /home/hisisJ2/.bash_profile
+
+- name: Copy /home/hisisJ/.bash_profile to /home/hisisJ2/.bash_profile
   shell: cp /home/hisisJ/.bash_profile /home/hisisJ2/.bash_profile
   
-- name: Change (1) /home/hisisJ2/.bash_profile 
-  shell: sed -i 's,/data/webapps/JEUS,/data/webapps/JEUS7005,g' /home/hisisJ2/.bash_profile
   
-- name: Change (2) /home/hisisJ2/.bash_profile 
-  shell: sed -i 's,-port 7730,-port 17730,g' /home/hisisJ2/.bash_profile
-  
-- name: Change (3) /home/hisisJ2/.bash_profile 
-  shell: sed -i 's,:9,:19,g' /home/hisisJ2/.bash_profile
-  
-- name: Change (4) /home/hisisJ2/.bash_profile 
-  shell: sed -i sed -i 's,:10,:20,g' /home/hisisJ2/.bash_profile
-  
-- name: Change (5) /home/hisisJ2/.bash_profile 
-  shell: sed -i 's,jeusEncode,jeusEncode -cachelogin,g' /home/hisisJ2/.bash_profile
+### Install JEUS7 #5 Slient Mode ###
+- name: Install Slient Mode_(DAS)
+  shell: /home/hisisJ/jeus7005_install/./jeus7_unix_generic.bin -f jeus_install.properties
 
-### Make Directory JEUS7 Fix5 ###
+ 
+### Make Directory JEUS7 Fix5 ### 
 - name: Make Directory "/data/webapps/JEUS7005/lib/jext"
   file:
     path: /data/webapps/JEUS7005/lib/jext
-	state: directory
-	owner: hisisJ2
-	group: WEB
-	mode: 644
-
+    state: directory
+    owner: hisisJ
+    group: WEB
+    mode: 0755
+    
+############################################Copy File################################################################
 ### JEUS7 Fix5 Patch & Libary Copy ###
 - name: Copy "jext_v7005_202102_unified.jar"
   shell: cp /home/hisisJ/jeus7005_install/jext_v7005_202102_unified.jar /data/webapps/JEUS7005/lib/jext/
@@ -77,10 +100,11 @@
   shell: mv /data/webapps/JEUS7005/lib/shared/wsit-2.2/jeus-ws.jar /data/webapps/JEUS7005/lib/shared/wsit-2.2/jeus-ws.jar.org
   
 - name: Copy "jeus-ws.jar"
-  shell: cp /home/hisisJ/jeus7005_install/jeus-ws.jar /data/webapps/JEUS7005/lib/shared/wsit-2.2/
+  shell: cp /home/hisisJ/jeus7005_install/jeus-ws.jar /data/webapps/JEUS7005/lib/shared/wsit-2.2/ 
 
 - name: Copy "datasource/*"
   shell: cp /data/webapps/JEUS/lib/datasource/* /data/webapps/JEUS7005/lib/datasource/
+
 
 ### License Copy ###
 - name: Move "license to license.trial"
@@ -92,34 +116,34 @@
 
 ## Config & lib Copy ###
 - name: Move "accounts.xml to accounts.xml.org"
-  shell: mv /data/webapps/JEUS7005/domains/jeus_domain/config/security/SYSTEM_DOMAIN/accounts.xml /data/webapps/JEUS7005/domains/jeus_domain/config/security/SYSTEM_DOMAIN/accounts.xml.org'
+  shell: mv /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/security/SYSTEM_DOMAIN/accounts.xml /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/security/SYSTEM_DOMAIN/accounts.xml.org'
   
 - name: Copy "accounts.xml"
-  shell: cp /data/webapps/JEUS/domains/jeus_domain/config/security/SYSTEM_DOMAIN/accounts.xml /data/webapps/JEUS7005/domains/jeus_domain/config/security/SYSTEM_DOMAIN/accounts.xml
+  shell: cp /data/webapps/JEUS/domains/{{ domain_dir }}/config/security/SYSTEM_DOMAIN/accounts.xml /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/security/SYSTEM_DOMAIN/accounts.xml 
   
 - name: Move "policies.xml to policies.xml.org"
-  shell: mv /data/webapps/JEUS7005/domains/jeus_domain/config/security/SYSTEM_DOMAIN/policies.xml /data/webapps/JEUS7005/domains/jeus_domain/config/security/SYSTEM_DOMAIN/policies.xml.org
+  shell: mv /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/security/SYSTEM_DOMAIN/policies.xml /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/security/SYSTEM_DOMAIN/policies.xml.org
   
 - name: Copy "policies.xml"
-  shell: cp /data/webapps/JEUS/domains/jeus_domain/config/security/SYSTEM_DOMAIN/policies.xml /data/webapps/JEUS7005/domains/jeus_domain/config/security/SYSTEM_DOMAIN/policies.xml
+  shell: cp /data/webapps/JEUS/domains/{{ domain_dir }}/config/security/SYSTEM_DOMAIN/policies.xml /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/security/SYSTEM_DOMAIN/policies.xml
   
 - name: Copy "security.key"
-  shell: cp /data/webapps/JEUS/domains/jeus_domain/config/security/security.key /data/webapps/JEUS7005/domains/jeus_domain/config/security/security.key
+  shell: cp /data/webapps/JEUS/domains/{{ domain_dir }}/config/security/security.key /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/security/security.key
 
 - name: Move "domain.xml to domain.xml.org"
-  shell: mv /data/webapps/JEUS7005/domains/jeus_domain/config/domain.xml /data/webapps/JEUS7005/domains/jeus_domain/config/domain.xml.org
+  shell: mv /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/domain.xml /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/domain.xml.org
   
 - name: Copy "domain.xml"
-  shell: cp /data/webapps/JEUS/domains/jeus_domain/config/domain.xml /data/webapps/JEUS7005/domains/jeus_domain/config/domain.xml
+  shell: cp /data/webapps/JEUS/domains/{{ domain_dir }}/config/domain.xml /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/domain.xml
 
 - name: Move "webcommon.xml.org"
-  shell: mv /data/webapps/JEUS7005/domains/jeus_domain/config/servlet/webcommon.xml /data/webapps/JEUS7005/domains/jeus_domain/config/servlet/webcommon.xml.org
+  shell: mv /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/servlet/webcommon.xml /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/servlet/webcommon.xml.org
 
 - name: Copy "webcommon.xml"
-  shell: cp /data/webapps/JEUS/domains/jeus_domain/config/servlet/webcommon.xml /data/webapps/JEUS7005/domains/jeus_domain/config/servlet/webcommon.xml
+  shell: cp /data/webapps/JEUS/domains/{{ domain_dir }}/config/servlet/webcommon.xml /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/servlet/webcommon.xml
   
 - name: Copy "application/*"
-  shell: cp /data/webapps/JEUS/domains/jeus_domain/lib/application/* /data/webapps/JEUS7005/domains/jeus_domain/lib/application/
+  shell: cp /data/webapps/JEUS/domains/{{ domain_dir }}/lib/application/* /data/webapps/JEUS7005/domains/{{ domain_dir }}/lib/application/
 
 - name: Move "nodes.xml to nodes.xml.org"
   shell: mv /data/webapps/JEUS7005/domains/nodes.xml /data/webapps/JEUS7005/domains/nodes.xml.org
@@ -131,74 +155,78 @@
   file:
     path: /data/webapps/JEUS7005/bin/scripts/
 	state: directory
-	owner: hisisJ2
+	owner: hisisJ
 	group: WEB
-	mode: 644
+	mode: 0755
 
 - name: Copy "scripts/*"
   shell: cp /data/webapps/JEUS/bin/scripts/* /data/webapps/JEUS7005/bin/scripts/
 
-
-- name: Make Directory "/data/webapps/JEUS7005/domains/jeus_domain/servers/heapdump"
+- name: Make Directory "/data/webapps/JEUS7005/domains/{{ domain_dir }}/servers/heapdump"
   file:
-    path: /data/webapps/JEUS7005/domains/jeus_domain/servers/heapdump
+    path: /data/webapps/JEUS7005/domains/{{ domain_dir }}/servers/heapdump
 	state: directory
-	owner: hisisJ2
+	owner: hisisJ
 	group: WEB
-	mode: 644
+	mode: 0755
 
-
-- name: Make Directory "/data/webapps/JEUS7005/domains/jeus_domain/servers/gclog"
+- name: Make Directory "/data/webapps/JEUS7005/domains/{{ domain_dir }}/servers/gclog"
   file:
-    path: /data/webapps/JEUS7005/domains/jeus_domain/servers/gclog
+    path: /data/webapps/JEUS7005/domains/{{ domain_dir }}/servers/gclog
 	state: directory
-	owner: hisisJ2
+	owner: hisisJ
 	group: WEB
-	mode: 644
+	mode: 0755
 	
 - name: Make Directory "/data/webapps/JEUS7005/lib/dependency"
   file:
     path: /data/webapps/JEUS7005/lib/dependency
 	state: directory
-	owner: hisisJ2
+	owner: hisisJ
 	group: WEB
-	mode: 644
+	mode: 0755
 
 - name: Copy "dependency/*"
   shell: cp /data/webapps/JEUS/lib/dependency/* /data/webapps/JEUS7005/lib/dependency/
-  	
+
 
 ### Change JEUS7 Fix5 jeusnm.xml ###
-- name: Change (1) /data/webapps/JEUS7005/nodemanager/jeusnm.xml
-  shell: sed -i 's/0.0.0.0/$HOSTNAME/g' /data/webapps/JEUS7005/nodemanager/jeusnm.xml
+- name: Change (1) /data/webapps/JEUS7005/nodemanager/jeusnm.xml-hostname change
+  #shell: sed -i 's/0.0.0.0/$HOSTNAME/g' /data/webapps/JEUS7005/nodemanager/jeusnm.xml
+  #shell: sed -i "/0.0.0.0/ c\hostname" /data/webapps/JEUS7005/nodemanager/jeusnm.xml
+  shell: /home/hisisJ/jeus7005_install/hostname.sh
 
 - name: Change (2) /data/webapps/JEUS7005/nodemanager/jeusnm.xml
-  shell: sed -i 's/<port>7730/<port>17730/g' /data/webapps/JEUS7005/nodemanager/jeusnm.xml
+  shell: sed -i 's/<port>7730/<port>17730/g' /data/webapps/JEUS7005/nodemanager/jeusnm.xml 
+  
   
 ### Change JEUS7 Fix5 domain.xml ###
-- name: Change (1) /data/webapps/JEUS7005/bin/scripts/jeusEncode
-  shell: sed -i 's,:9,:19,g' /data/webapps/JEUS7005/bin/scripts/jeusEncode
+- name: Change (1) /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/domain.xml
+  shell: sed -i 's/PermSize/MetaspaceSize/g' /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/domain.xml
+  
+- name: Change (2) /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/domain.xml
+  shell: sed -i 's,/data/webapps/JEUS,/data/webapps/JEUS7005,g' /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/domain.xml
+  
+- name: Change (3) /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/domain.xml
+  shell: sed -i 's,jmxremote.port=,jmxremote.port=1,g' /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/domain.xml
+  
+- name: Change (4) /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/domain.xml
+  shell: sed -i 's,<listen-port>1,<listen-port>2,g' /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/domain.xml
+  
+- name: Change (5) /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/domain.xml
+  shell: sed -i 's,<listen-port>8,<listen-port>18,g' /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/domain.xml
 
+- name: Change (6) /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/domain.xml
+  shell: sed -i 's,<listen-port>9,<listen-port>19,g' /data/webapps/JEUS7005/domains/{{ domain_dir }}/config/domain.xml
 
-### Change JEUS7 Fix5 nodes.xml ###
-- name: Change (1) /data/webapps/JEUS7005/domains/jeus_domain/config/domain.xml
-  shell: sed -i 's/PermSize/MetaspaceSize/g' /data/webapps/JEUS7005/domains/jeus_domain/config/domain.xml
-  
-- name: Change (2) /data/webapps/JEUS7005/domains/jeus_domain/config/domain.xml
-  shell: sed -i 's,/data/webapps/JEUS,/data/webapps/JEUS7005,g' /data/webapps/JEUS7005/domains/jeus_domain/config/domain.xml
-  
-- name: Change (3) /data/webapps/JEUS7005/domains/jeus_domain/config/domain.xml
-  shell: sed -i 's,jmxremote.port=,jmxremote.port=1,g' /data/webapps/JEUS7005/domains/jeus_domain/config/domain.xml
-  
-- name: Change (4) /data/webapps/JEUS7005/domains/jeus_domain/config/domain.xml
-  shell: sed -i 's,<listen-port>1,<listen-port>2,g' /data/webapps/JEUS7005/domains/jeus_domain/config/domain.xml
-  
-- name: Change (5) /data/webapps/JEUS7005/domains/jeus_domain/config/domain.xml
-  shell: sed -i 's,<listen-port>8,<listen-port>18,g' /data/webapps/JEUS7005/domains/jeus_domain/config/domain.xml
+- name: Change (7) domain.xml id
+  shell: sh -x /home/hisisJ/jeus7005_install/change_domain_xml_id.sh
+ 
+ 
+ ## Change JEUS7 Fix5 nodes.xml ###
+- name: Change (1) /data/webapps/JEUS7005/domains/nodes.xml
+  shell: sed -i 's/<port>7730/<port>17730/g' /data/webapps/JEUS7005/domains/nodes.xml
 
-- name: Change (6) /data/webapps/JEUS7005/domains/jeus_domain/config/domain.xml
-  shell: sed -i 's,<listen-port>9,<listen-port>19,g' /data/webapps/JEUS7005/domains/jeus_domain/config/domain.xml
-  
 
 ### Change JEUS7 Fix5 jeusEncode port ###
 - name: Change (1) /data/webapps/JEUS7005/bin/scripts/jeusEncode
@@ -206,3 +234,43 @@
   
 - name: Change (2) /data/webapps/JEUS7005/bin/scripts/jeusEncode
   shell: sed -i 's,:10,:20,g' /data/webapps/JEUS7005/bin/scripts/jeusEncode
+
+
+### JEUS7 Fix5 Change .bash_profile, User is hisisJ2 ###
+- name: Change (1) /home/hisisJ2/.bash_profile 
+  shell: sed -i 's,/data/webapps/JEUS,/data/webapps/JEUS7005,g' /home/hisisJ2/.bash_profile
+  
+- name: Change (2) /home/hisisJ2/.bash_profile 
+  shell: sed -i 's,-port 7730,-port 17730,g' /home/hisisJ2/.bash_profile
+  
+- name: Change (3) /home/hisisJ2/.bash_profile 
+  shell: sed -i 's,:9,:19,g' /home/hisisJ2/.bash_profile
+  
+- name: Change (4) /home/hisisJ2/.bash_profile 
+  shell: sed -i sed -i 's,:10,:20,g' /home/hisisJ2/.bash_profile
+  
+- name: Change (5) /home/hisisJ2/.bash_profile 
+  shell: sed -i 's,jeusEncode,jeusEncode -cachelogin,g' /home/hisisJ2/.bash_profile
+  
+- name: Change (6) /home/hisisJ2/.bash_profile
+  shell: sed -i 's/jdk1.7.0_55/jdk1.8.0_281/g' /home/hisisJ2/.bash_profile
+  
+- name: Append "stopNodeManager -properties"
+  shell: sed -i'' -r -e "/alias nmdown='stopNodeManager -host localhost -port 17730'/a\alias nmdown='stopNodeManager -properties $JEUS_HOME/nodemanager/jeusnm.xml'" /home/hisisJ2/.bash_profile
+
+### Change Owner ###
+- name: Change hisisJ  to hisisJ2
+  shell: chown -R hisisJ2:WEB /data/webapps/JEUS7005
+
+### JEUS7005 boot ###
+- name: Change user
+  shell: /usr/bin/sudo su - hisisJ2
+  
+- name: source .bash_profile
+  shell: source /home/hisisJ2/.bash_profile
+  
+- name: dsboot
+  shell: dsboot
+
+- name: nsboot
+  shell: nsboot
