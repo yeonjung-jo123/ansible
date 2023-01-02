@@ -62,6 +62,7 @@
 	- change_domain_xml_id.sh
     - hostname.sh
     - install.sh
+    - source.sh
 
 - name: chmod /home/hisisJ/jeus7005_install
   shell: chmod 700 /home/hisisJ/jeus7005_install/*
@@ -293,12 +294,19 @@
 
 ####################################################################################################################
 ### JEUS7005 boot ###
-- name: Change user
-  shell: /usr/bin/sudo su - hisisJ2
-  
-- name: source .bash_profile
-  shell: source /home/hisisJ2/.bash_profile
-  
+- name: Source .bash_profile (1)
+  shell: cp /home/hisisJ/jeus7005_install/source.sh /home/hisisJ2
+
+- name: Source .bash_profile (2)
+  shell: chown -R hisisJ2:WEB /home/hisisJ2
+
+- name: Source .bash_profile (3)
+  command: sh /home/hisisJ2/source.sh
+  become: yes
+  become_user: hisisJ2
+  become_method: sudo
+
+
 - name: dsboot
   shell: dsboot
 
