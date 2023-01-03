@@ -6,7 +6,13 @@
   
   
   vars:
+    hisisJ_home_dir: /home/hisisJ
+    hisisJ2_home_dir: /home/hisisJ2
     domain_dir: bo_domain
-  
+    jeus_dir: /data/webapps/JEUS
+    jeus7005_dir: /data/webapps/JEUS7005
+    jdk8_dir: /usr/java/jdk1.8.0_281 
+    jdk7_dir: /usr/java/jdk1.7.0_55
+
   roles:
     - JEUS7_Patch_#3_to_#5
