@@ -1,0 +1,13 @@
+---
+- hosts: 10.154.17.48, 10.154.17.49, 124.243.92.38, 124.243.92.39
+  remote_user: hisisJ
+  become: true
+  become_user: root
+  become_method: sudo
+
+  tasks:
+  - name: chown ojdbc8.jar
+    file:
+      path: /data/webapps/JEUS7005/lib/datasource/ojdbc8.jar
+      owner: hisisJ2
+      group: WEB
