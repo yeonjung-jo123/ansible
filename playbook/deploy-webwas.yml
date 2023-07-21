@@ -1,0 +1,120 @@
+---
+- hosts: 124.243.92.204, 124.243.92.159
+  remote_user: hisisJ
+  become: true
+  become_user: hisisJ
+  become_method: sudo
+
+  vars:
+    date: "{{ lookup('pipe', 'date +%y%m%d') }}"
+
+  tasks:
+  - name: "Backup Deploy Server Original file"
+    shell: tar -cvzf /data/webapps/archive/E-HIMART/WEB/MO/resources/nf_{{ date }}.tar /data/webapps/archive/E-HIMART/WEB/MO/resources/nf
+    ignore_errors: true
+
+
+  - name: "Remove  Deploy Server Original Directory"
+    shell: rm -rvf /data/webapps/archive/E-HIMART/WEB/MO/resources/nf/
+
+
+  - name: "Remove  Deploy Server Original Archive File"
+    shell: find /data/webapps/archive/E-HIMART/WEB/MO/resources -name 'nf_*.tar' -mtime +0 -delete
+    ignore_errors: true
+
+
+  - name: "Archive Jenkins Server Build Result"
+    shell: sudo tar -cvzf /var/lib/jenkins/workspace/TEST-Deploy-WebToB/.output/public_{{ date }}.tar /var/lib/jenkins/workspace/TEST-Deploy-WebToB/.output/public
+    delegate_to: 127.0.0.1
+
+
+  - name: "Move Jenkins Build Result Archive File Deploy Server"
+    copy:
+      src: /var/lib/jenkins/workspace/TEST-Deploy-WebToB/.output/public_{{ date }}.tar
+      dest: /data/webapps/archive/E-HIMART/WEB/MO/resources/
+      owner: hisisJ
+      group: WEB
+
+
+  - name: "Make Deploy Server Original Directory"
+    file:
+      path: /data/webapps/archive/E-HIMART/WEB/MO/resources/nf
+      state: directory
+      owner: hisisJ
+      group: WEB
+
+
+  - name: "Unarchive Jenkins Result Archive File Deploy Server"
+    shell: tar -xvzf /data/webapps/archive/E-HIMART/WEB/MO/resources/public_{{ date }}.tar -C /data/webapps/archive/E-HIMART/WEB/MO/resources/nf --strip-components 7
+
+
+  - name: "Remove Result Archive File Depoloy Server"
+    shell: rm -rvf  /data/webapps/archive/E-HIMART/WEB/MO/resources/public_*.tar
+    ignore_errors: true
+
+
+  - name: "Remove Result Archive File Jenkins Server"
+    shell: sudo rm -rvf /var/lib/jenkins/workspace/TEST-Deploy-WebToB/.output/public_*.tar
+    delegate_to: 127.0.0.1
+    ignore_errors: true
+
+
+
+- hosts: 10.154.12.70
+  remote_user: hisisJ
+  become: true
+  become_user: hisisJ
+  become_method: sudo
+
+  vars:
+    date: "{{ lookup('pipe', 'date +%y%m%d') }}"
+
+  tasks:
+  - name: "Backup Deploy Server Original file"
+    shell: tar -cvzf /data/webapps/archive/E-HIMART/WAS/MO/resources/nf_{{ date }}.tar /data/webapps/archive/E-HIMART/WAS/MO/resources/nf
+    ignore_errors: true
+
+
+  - name: "Remove  Deploy Server Original Directory"
+    shell: rm -rvf /data/webapps/archive/E-HIMART/WAS/MO/resources/nf/
+
+
+  - name: "Remove  Deploy Server Original Archive File"
+    shell: find /data/webapps/archive/E-HIMART/WEB/MO/resources -name 'nf_*.tar' -mtime +0 -delete
+    ignore_errors: true
+
+
+  - name: "Archive Jenkins Server Build Result"
+    shell: sudo tar -cvzf /var/lib/jenkins/workspace/TEST-Deploy-WebToB/.output/public_{{ date }}.tar /var/lib/jenkins/workspace/TEST-Deploy-WebToB/.output/public
+    delegate_to: 127.0.0.1
+
+
+  - name: "Move Jenkins Build Result Archive File Deploy Server"
+    copy:
+      src: /var/lib/jenkins/workspace/TEST-Deploy-WebToB/.output/public_{{ date }}.tar
+      dest: /data/webapps/archive/E-HIMART/WAS/MO/resources/
+      owner: hisisJ
+      group: WEB
+
+
+  - name: "Make Deploy Server Original Directory"
+    file:
+      path: /data/webapps/archive/E-HIMART/WAS/MO/resources/nf
+      state: directory
+      owner: hisisJ
+      group: WEB
+
+
+  - name: "Unarchive Jenkins Result Archive File Deploy Server"
+    shell: tar -xvzf /data/webapps/archive/E-HIMART/WAS/MO/resources/public_{{ date }}.tar -C /data/webapps/archive/E-HIMART/WAS/MO/resources/nf --strip-components 7
+
+
+  - name: "Remove Result Archive File Depoloy Server"
+    shell: rm -rvf  /data/webapps/archive/E-HIMART/WAS/MO/resources/public_*.tar
+    ignore_errors: true
+
+
+  - name: "Remove Result Archive File Jenkins Server"
+    shell: sudo rm -rvf /var/lib/jenkins/workspace/TEST-Deploy-WebToB/.output/public_*.tar
+    delegate_to: 127.0.0.1
+    ignore_errors: true
