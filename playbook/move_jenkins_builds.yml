@@ -1,0 +1,32 @@
+---
+- hosts: 10.154.17.120
+  remote_user: hisis
+  #become: true
+  #become_user: root
+  #become_method: sudo
+
+  vars_files:
+    - /etc/ansible/playbook/utils/jenkins_job_list.yml
+
+
+
+  tasks:
+  #Execcute Old Hudson : 10.154.17.205
+#  - name: Move Hudson builds to Jenkins
+#    shell: scp -r /data/home/hisis/.hudson/jobs/{{ item }}/builds/ hisis@10.154.17.120:"/data/home/hisis/ec/tools/TEST-jenkins01/jobs/{{ item }}/"
+#    with_items: "{{ job_name }}"
+#    ignore_errors: true
+
+
+  #Execute New Jenkins : 10.154.17.120
+  - name: Delete _runmap.xml
+    shell: sudo rm -rvf /data/home/hisis/ec/tools/TEST-jenkins01/jobs/{{ item }}/builds/_runmap.xml
+    with_items: "{{ job_name }}"
+    ignore_errors: true
+
+
+  #Execute New Jenkins : 10.154.17.120
+  - name: Delete legacyIds
+    shell: sudo rm -rvf /data/home/hisis/ec/tools/TEST-jenkins01/jobs/{{ item }}/builds/legacyIds
+    with_items: "{{ job_name }}"
+    ignore_errors: true
