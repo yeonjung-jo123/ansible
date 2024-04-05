@@ -15,6 +15,8 @@
     force: yes
     
 - name: "run 스크립트.sh"                   # 원격지 서버에서 해당되는 파일 
+  environment:
+    TMOUT=600                              # /etc/profile 에 있는 TMOUT=600 환경 변수 값을 읽어서 실행 하도록 설정
   shell: cd /raon; ./RAON_SERVER_Unix.sh
   become: ture
 
