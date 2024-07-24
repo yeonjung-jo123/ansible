@@ -1,0 +1,53 @@
+- name: Check Apache SSL File Directory
+  stat:
+    path: /usr/local/httpd/conf/ssl/infra.jtbc.co.kr
+  register: apache_result
+
+- name: Check Nginx SSL File Directory
+  stat:
+    path: /usr/local/nginx/conf/ssl/infra.jtbc.co.kr
+  register: nginx_result
+
+#######################################################################################################################
+- name: Backup Apache SSL Crt File
+  shell: mv /usr/local/httpd/conf/ssl/infra.jtbc.co.kr/*.crt /usr/local/httpd/conf/ssl/infra.jtbc.co.kr/bak
+  when: apache_result.stat.exists == True
+
+- name: Backup Apache SSL Key File
+  shell: mv /usr/local/httpd/conf/ssl/infra.jtbc.co.kr/*.key /usr/local/httpd/conf/ssl/infra.jtbc.co.kr/bak
+  when: apache_result.stat.exists == True
+
+- name: Backup Nginx SSL Crt File
+  shell: mv /usr/local/nginx/conf/ssl/infra.jtbc.co.kr/*.pem /usr/local/nginx/conf/ssl/infra.jtbc.co.kr/bak
+  when: nginx_result.stat.exists == True
+
+- name: Backup Nginx SSL Key File
+  shell: mv /usr/local/nginx/conf/ssl/infra.jtbc.co.kr/*.key /usr/local/nginx/conf/ssl/infra.jtbc.co.kr/bak
+  when: nginx_result.stat.exists == True
+
+#######################################################################################################################
+- name: Copy Apache SSL File
+  copy:
+    src: certs/apache/infra.jtbc.co.kr/
+    dest: /usr/local/httpd/conf/ssl/infra.jtbc.co.kr
+    owner: root
+    group: root
+  when: apache_result.stat.exists == True
+
+- name: Copy Nginx SSL File
+  copy:
+    src: certs/nginx/infra.jtbc.co.kr/
+    dest: /usr/local/nginx/conf/ssl/infra.jtbc.co.kr
+    owner: root
+    group: root
+  when: apache_result.stat.exists == True
+
+#######################################################################################################################
+- name: Reload Apache
+  shell: systemctl reload httpd.service
+  when: apache_result.stat.exists == True
+
+- name: Reload Nginx
+  shell: systemctl reload nginx.service
+  when: nginx_result.stat.exists == True
+
