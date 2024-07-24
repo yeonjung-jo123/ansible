@@ -1,3 +1,6 @@
+### 디렉토리가 일치할 경우 playbook 내용 실행
+### 디렉토리가 일치 하지 않는 경우 Skip
+
 - name: Check Apache SSL File Directory
   stat:
     path: /usr/local/httpd/conf/ssl/infra.jtbc.co.kr
