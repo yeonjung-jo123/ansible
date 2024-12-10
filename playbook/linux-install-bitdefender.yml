@@ -1,0 +1,7 @@
+---
+- hosts: all
+  remote_user: bluesky
+  become: yes
+
+  roles:
+    - install/bitdefender
