@@ -16,7 +16,7 @@
     group: root
     mode: 0755
 #==============================================#
-- name: Get IP list all Interface
+- name: Get IP list all Interface  ## 할당 된 IP 정보 불러오기
   shell: ip -o -4 addr show | awk '{print $4}' | cut -d'/' -f1
   register: ip_addresses
   changed_when: false
@@ -25,11 +25,11 @@
   debug:
     msg: "IP addresses: {{ ip_addresses.stdout_lines }}"
 #==============================================#
-- name: IP address Private IP & Public IP 
+- name: IP address Private IP & Public IP  ## 2로 시작하는 IP가 있는지 검색
   set_fact:
     has_2_prefix: "{{ ip_addresses.stdout_lines | select('match', '^2') | list | length > 0 }}"
 #==============================================#
-- name: IP address Only Private IP
+- name: IP address Only Private IP  ## 1로만 시작하는 IP가 있는지 검색
   set_fact:
     has_only_1_prefix: "{{ ip_addresses.stdout_lines | select('match', '^1') | list | length == ip_addresses.stdout_lines | length }}"
 #==============================================#
