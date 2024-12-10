@@ -1,0 +1,60 @@
+- name: Uninstall traps
+  shell:
+    echo "yes" | /opt/traps/scripts/uninstall.sh
+  ignore_errors: true
+#==============================================#
+- name: Uninstall V3
+  shell:
+    echo "y" | /usr/local/v3net/uninstall.sh
+  ignore_errors: true
+#==============================================#
+- name: make /home/bluesky/utils/bitdefender
+  file:
+    path: /home/bluesky/utils/bitdefender
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+#==============================================#
+- name: Get IP list all Interface
+  shell: ip -o -4 addr show | awk '{print $4}' | cut -d'/' -f1
+  register: ip_addresses
+  changed_when: false
+#==============================================#
+- name: Message IP addresses
+  debug:
+    msg: "IP addresses: {{ ip_addresses.stdout_lines }}"
+#==============================================#
+- name: IP address Private IP & Public IP 
+  set_fact:
+    has_2_prefix: "{{ ip_addresses.stdout_lines | select('match', '^2') | list | length > 0 }}"
+#==============================================#
+- name: IP address Only Private IP
+  set_fact:
+    has_only_1_prefix: "{{ ip_addresses.stdout_lines | select('match', '^1') | list | length == ip_addresses.stdout_lines | length }}"
+#==============================================#
+- name: Copy File | Private IP & Public IP
+  copy:
+    src: bitdefender/Basic_Install_Linux.tar
+    dest: /home/bluesky/utils/bitdefender
+  when: has_2_prefix
+#==============================================#
+- name: Copy File | Only Private IP
+  copy:
+    src: bitdefender/Mokdong_PrivateIP_Install_Linux.tar
+    dest: /home/bluesky/utils/bitdefender
+  when: has_only_1_prefix
+#==============================================#
+- name: Unarchive File | Private IP & Public
+  shell: tar -xvf /home/bluesky/utils/bitdefender/Basic_Install_Linux.tar -C /home/bluesky/utils/bitdefender
+  when: has_2_prefix
+#==============================================#
+- name: Unarchive File | Only Private IP
+  shell: tar -xvf /home/bluesky/utils/bitdefender/Mokdong_PrivateIP_Install_Linux.tar -C /home/bluesky/utils/bitdefender
+  when: has_only_1_prefix
+#==============================================#
+- name: Change Mode installer
+  shell: chmod +x /home/bluesky/utils/bitdefender/installer
+#==============================================#
+- name: Install bitfender
+  shell: /home/bluesky/utils/bitdefender/installer
