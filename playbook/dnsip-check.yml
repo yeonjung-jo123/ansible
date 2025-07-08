@@ -1,0 +1,44 @@
+---
+- name: Collect DNS configuration from CentOS and Ubuntu
+  hosts: all
+  become: yes
+  gather_facts: yes
+  
+   tasks:  
+    - name: Get DNS from resolv.conf (CentOS/RHEL)
+      when: ansible_facts['os_family'] == "RedHat"
+      block:
+        - name: Check if /etc/resolv.conf exists
+          ansible.builtin.stat:
+            path: /etc/resolv.conf
+          register: resolv_conf
+
+        - name: Read nameserver lines from /etc/resolv.conf
+          ansible.builtin.shell: "grep '^nameserver' /etc/resolv.conf"
+          when: resolv_conf.stat.exists
+          register: centos_dns
+          changed_when: false
+
+    - name: Get DNS from netplan YAML (Ubuntu/Debian)
+      when: ansible_facts['os_family'] == "Debian"
+      block:
+        - name: Search for nameservers block in /etc/netplan/*.yaml
+          ansible.builtin.shell: |
+            awk '/nameservers:/,/addresses:.*\]/' /etc/netplan/*.yaml
+          register: ubuntu_dns
+          changed_when: false
+
+    - name: Set combined DNS output safely
+      ansible.builtin.set_fact:
+        dns_output: |
+          Hostname: {{ ansible_facts['hostname'] | default(inventory_hostname) }}
+          {{ centos_dns.stdout | default('') }}
+          {{ ubuntu_dns.stdout | default('') }}
+
+    - name: Write DNS info to local file (on Ansible server)
+      delegate_to: localhost
+      ansible.builtin.lineinfile:
+        path: "/tmp/dns_report.txt"
+        line: "{{ dns_output }}"
+        create: yes
+        insertafter: EOF
