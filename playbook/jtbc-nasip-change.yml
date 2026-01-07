@@ -1,0 +1,14 @@
+---
+- hosts: JTBC-NAS
+  remote_user: bluesky
+  become: yes
+
+  roles:
+    - jtbc-nasip-change/jtbc-dr-nas
+    #- jtbc-nasip-change/jtbc-main-nas
+    
+  vars:
+    fstab_path: /etc/fstab
+
+# jtbc-dr-nas : JTBC 운영 NAS 장애 시 DR NAS로 전환하는 플레이북
+# jtbc-main-nas : JTBC DR NAs에서 운영 NAS로 전환하는 플레이북
