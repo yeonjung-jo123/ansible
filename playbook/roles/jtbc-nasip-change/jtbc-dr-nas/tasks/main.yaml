@@ -1,0 +1,27 @@
+---
+# 1. 현재 Main NAS 마운트 해제
+- name: Unmount Main NAS mount points
+  shell: |
+    mount | awk '/192\.168\.171\.2[78]:/ {print $3}' | xargs -r umount
+  args:
+    warn: false
+  ignore_errors: yes
+
+# 2. Main NAS (192.168.171.27, 192.168.171.28) fstab 라인 주석 처리=비활성화
+- name: Comment out Main NAS entries in fstab
+  replace:
+    path: "{{ fstab_path }}"
+    regexp: '^(192\.168\.171\.2[78]:.*)$'
+    replace: '#\1'
+    backup: yes
+
+# 3. DR NAS (192.168.171.49) fstab 라인 주석 해제=활성화
+- name: Uncomment DR NAS entries in fstab
+  replace:
+    path: "{{ fstab_path }}"
+    regexp: '^#(192\.168\.171\.49:.*)$'
+    replace: '\1'
+
+# 4. DR NAS 마운트
+- name: Mount all filesystems from fstab
+  command: mount -a
